@@ -1,0 +1,301 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>백신 대작전</title>
+<style>
+:root{--bg:#eaf4f9;--card:#fff;--ink:#17324a;--mut:#526c7e;--line:#cbdfea;--soft:#f2f8fb;--teal:#087e77;color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0f1c27;--card:#172a38;--ink:#e6f1f7;--mut:#9db6c6;--line:#2c4557;--soft:#1d3342;--teal:#3cc4b8;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#0f1c27;--card:#172a38;--ink:#e6f1f7;--mut:#9db6c6;--line:#2c4557;--soft:#1d3342;--teal:#3cc4b8;color-scheme:dark}
+*{box-sizing:border-box}html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:'Malgun Gothic','Apple SD Gothic Neo','Noto Sans KR',sans-serif;padding:12px}
+.wrap{max-width:1180px;margin:auto}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px;box-shadow:0 6px 20px #0001}
+h1{margin:0;font-size:22px}h2{margin:0 0 8px;font-size:16px}p{margin:4px 0}
+.top{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap}
+.pill{background:var(--soft);border-radius:20px;padding:5px 12px;font-weight:700;font-size:14px}
+.grid{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(300px,1fr);gap:12px;margin-top:12px}
+canvas{width:100%;display:block;border-radius:12px;border:2px solid #7db4d0;cursor:pointer;touch-action:manipulation}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:8px}
+.st{background:var(--soft);border-radius:10px;padding:7px;text-align:center;font-size:12px;color:var(--mut)}
+.st b{display:block;font-size:18px;color:var(--ink)}
+.bar{height:10px;border-radius:9px;background:var(--soft);overflow:hidden;margin:5px 0}
+.bar i{display:block;height:100%;width:0;transition:width .3s}
+button{font:inherit;cursor:pointer;color:var(--ink)}button:disabled{opacity:.45;cursor:not-allowed}
+button:focus-visible,canvas:focus-visible{outline:3px solid #2a8fd0;outline-offset:2px}
+.lv{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px;margin-top:8px}
+.lvb{background:var(--soft);border:2px solid var(--line);border-radius:12px;padding:10px;text-align:left;font-weight:700}
+.lvb:not(:disabled):hover{border-color:#2a8fd0}
+.dots{font-size:11px;color:var(--mut);margin-top:3px}
+.def{display:flex;justify-content:space-between;align-items:center;gap:6px;width:100%;background:var(--soft);border:2px solid var(--line);border-radius:10px;padding:8px 10px;margin-bottom:6px;font-weight:700;font-size:14px;text-align:left}
+.def small{display:block;font-weight:400;color:var(--mut)}
+.def .pb{height:5px;background:var(--line);border-radius:5px;margin-top:4px;width:120px}.pb i{display:block;height:100%;background:#2aa56a;border-radius:5px}
+.cost{white-space:nowrap}
+.q{background:var(--soft);border-radius:10px;padding:10px;font-weight:700;line-height:1.5}
+.ans{display:block;width:100%;text-align:left;margin-top:6px;background:var(--card);border:2px solid var(--line);border-radius:10px;padding:9px 12px;font-weight:600}
+.ans.ok{background:#dff5e6;border-color:#2a8a5a;color:#14573a}.ans.no{background:#ffe9e5;border-color:#cb5a4f;color:#8f2f29}
+.msg{background:var(--soft);border-left:4px solid #2a8fd0;border-radius:8px;padding:8px 10px;min-height:42px;font-weight:600;font-size:14px;margin-top:8px}
+.msg.bad{border-color:#d0463c}.msg.good{border-color:#2a9a5a}
+.b{border:0;border-radius:10px;padding:9px 14px;font-weight:800;background:var(--teal);color:#fff}.b.s{background:var(--soft);color:var(--ink);border:1px solid var(--line)}
+.hide{display:none!important}.res{text-align:center;padding:10px}.big{font-size:44px;margin:4px 0}
+#g3{position:relative;touch-action:none}#g3 canvas{height:auto;aspect-ratio:1;border-radius:50%;background:radial-gradient(circle,#0c2438,#050d16);cursor:grab}.lab{position:absolute;transform:translate(-50%,-140%);font-size:11px;font-weight:800;color:#fff;text-shadow:0 0 3px #000,0 0 3px #000;pointer-events:none;white-space:nowrap;display:none}details{background:var(--soft);border-radius:10px;padding:6px 10px;margin-bottom:8px;font-size:13px;line-height:1.5}summary{cursor:pointer;font-weight:800}
+@media(max-width:820px){.grid{grid-template-columns:1fr}}
+@media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style><script src="https://cdn.jsdelivr.net/npm/three@0.152.2/build/three.min.js"></script></head><body>
+<div class="wrap">
+<div class="card top"><div><h1>💉 백신 대작전</h1><p style="color:var(--mut);font-size:13px">감염병을 막고, 백신을 세계로 퍼뜨려 지구를 지켜요!</p></div>
+<div><span class="pill" id="lvb">준비</span> <span class="pill" id="scb">0점</span></div></div>
+
+<div class="grid">
+<div class="card"><div id="g3" tabindex="0" role="img" aria-label="푸른 바다와 초록 대륙이 보이는 3D 지구. 드래그해서 돌리고 도시를 눌러 선택해요. 방향키로도 도시를 고를 수 있어요"></div><canvas id="map" class="hide" width="1000" height="500"></canvas>
+<p style="font-size:12px;color:var(--mut)">🌍 드래그로 지구 돌리기 · 🏙️ 도시를 눌러 선택 → 💉 백신 접종단 파견 · 🔴 감염(클수록 많아요) · 🟢 초록 고리는 면역</p></div>
+
+<div>
+<div class="card" id="menu"><h2>🌍 감염병을 골라 지구를 지켜요</h2>
+<p style="font-size:13px;color:var(--mut)">앞 단계를 성공하면 다음 감염병이 열려요. 갈수록 빠르고 무서워져요!</p><div class="lv" id="lv"></div></div>
+
+<div class="card hide" id="game">
+<div class="top"><b id="dn"></b><span class="pill" id="cb">🔥 콤보 0</span></div>
+<details open><summary>📖 질병 소개</summary><div id="dinfo"></div></details><div class="stats"><div class="st">날짜<b id="day">0</b></div><div class="st">감염률<b id="inf">0%</b></div><div class="st">면역률<b id="imm">0%</b></div><div class="st">방역 🛡️<b id="tok">0</b></div></div>
+<div class="bar" role="progressbar" aria-label="감염률" aria-valuemin="0" aria-valuemax="100"><i id="ib" style="background:linear-gradient(90deg,#e9b44c,#d9453a)"></i></div>
+<p style="font-size:12px;color:var(--mut)">감염률이 30%가 되면 실패! 끝날 때까지 지켜내면 성공!</p>
+<div class="msg" id="msg" role="status" aria-live="polite"></div>
+<h2 style="margin-top:10px">🛡️ 예방 수칙으로 막기 <span style="font-weight:400;font-size:12px;color:var(--mut)">(3🛡️)</span></h2>
+<div id="defs"></div>
+<button class="def" data-a="vac"><span>💉 백신 접종단 파견<small id="vs">도시를 선택하세요 · 이웃 도시로도 퍼져요</small></span><span class="cost">5 🛡️</span></button>
+<button class="def" data-a="epi" id="epi"><span>🕵️ 역학 조사관 파견<small>감염 경로를 알아내요</small></span><span class="cost">2 🛡️</span></button>
+<div style="display:flex;gap:6px;margin-top:6px"><button class="b s" id="pz">⏸ 멈춤</button><button class="b s" id="qt">나가기</button></div></div>
+
+<div class="card hide" id="res"></div>
+</div>
+</div>
+
+<div class="card hide" id="quiz" style="margin-top:12px"><h2>📚 퀴즈를 맞히면 방역 🛡️가 쌓여요</h2><div class="q" id="qq"></div><div id="qa"></div><p id="fb" style="font-weight:700;min-height:22px"></p></div>
+</div>
+
+<script>
+const $=id=>document.getElementById(id);
+const R=[['접촉','🧼','손 씻기'],['비말','😷','마스크·기침 예절'],['공기','🪟','환기하기'],['물','💧','끓인 물 마시기'],['침','🍽️','음식 덜어 먹기']];
+const CT=[['서울',127,37.6,10],['도쿄',139.7,35.7,14],['베이징',116.4,39.9,20],['델리',77.2,28.6,22],['런던',-.1,51.5,9],['카이로',31.2,30,20],['킨샤사',15.3,-4.3,15],['뉴욕',-74,40.7,19],['멕시코시티',-99.1,19.4,21],['상파울루',-46.6,-23.5,22],['시드니',151.2,-33.9,5],['모스크바',37.6,55.8,12],['싱가포르',103.8,1.3,6],['로스앤젤레스',-118.2,34,13]].map(c=>({n:c[0],x:(c[1]+180)/360*1000,y:(90-c[2])/180*500,p:c[3]}));
+const E=[[0,1],[0,2],[2,3],[2,11],[3,5],[3,12],[12,10],[12,0],[1,13],[13,7],[13,8],[7,4],[7,9],[8,9],[4,11],[4,5],[5,6],[6,9]];
+const LV=[
+{n:'독감',ic:'🤧',b:.32,w:[.3,.7,0,0,0],o:[0],t:8,d:40,open:1},
+{n:'식중독',ic:'🤢',b:.36,w:[.2,0,0,.5,.3],o:[5],t:7,d:40,open:1},
+{n:'유행 각결막염',ic:'👁️',b:.4,w:[.7,.1,0,0,.2],o:[4,3],t:6,d:42,open:0},
+{n:'코로나19',ic:'😷',b:.46,w:[.15,.4,.45,0,0],o:[2,7],t:6,d:45,open:0},
+{n:'정체불명 신종 감염병',ic:'🦠',b:.54,w:[.2,.25,.2,.15,.2],o:[6,10,13],t:5,d:50,open:0}];
+const Q=[
+['감염병은 무엇이 몸에 들어와 걸리는 질병일까요?',['병원체','추위','먼지'],0],
+['뜨거운 물에 데어 생긴 화상은 감염병일까요?',['감염병이다','감염병이 아니다','독감이다'],1],
+['병원체에 오염된 물을 마시고 걸리는 감염은?',['물을 통한 감염','비말을 통한 감염','공기를 통한 감염'],0],
+['한 접시의 음식을 같이 먹을 때 옮는 감염은?',['접촉을 통한 감염','침을 통한 감염','물을 통한 감염'],1],
+['입을 가리지 않고 기침하면 튀어 나가는 것은?',['비말','소금','바람'],0],
+['공기 중에 떠다니는 병원체가 눈·코·입으로 들어오는 감염은?',['공기를 통한 감염','침을 통한 감염','물을 통한 감염'],0],
+['병원체가 묻은 물건을 만진 뒤 손을 씻지 않고 눈을 만지면?',['감염병에 걸릴 수 있다','절대 안 걸린다','튼튼해진다'],0],
+['기침이나 재채기를 할 때 올바른 행동은?',['손바닥으로 친구 쪽 가리기','휴지나 옷소매로 입과 코 가리기','그냥 하기'],1],
+['손을 씻을 때 가장 알맞은 방법은?',['물만 살짝','비누로 꼼꼼히 씻기','옷에 닦기'],1],
+['독감을 예방하려면 꼭 해야 하는 것은?',['예방 접종','밤새 놀기','간식 많이 먹기'],0],
+['교실 안 병원체를 줄이는 방법은?',['문과 창문을 열어 환기하기','창문 꽉 닫기','커튼 치기'],0],
+['안전하게 물을 마시는 방법은?',['끓인 물 마시기','아무 물이나 마시기','고인 물 마시기'],0],
+['감염병이 유행할 때 마스크는 어떻게 써야 할까요?',['턱에 걸치기','코와 입을 모두 덮기','코만 가리기'],1],
+['코로나19는 발생한 지 얼마 만에 전 세계로 퍼졌을까요?',['두 달','십 년','백 년'],0],
+['감염병의 원인을 찾아 유행을 막는 일을 하는 사람은?',['역학 조사관','소방관','요리사'],0],
+['우리나라에서 필수로 예방 접종을 하는 오래된 감염병은?',['결핵','화상','멀미'],0],
+['휴대 전화에서 병원체가 많이 발견되는 까닭은?',['손으로 자주 만지기 때문','화면이 커서','색이 예뻐서'],0],
+['몸을 건강하게 해 감염병을 막는 방법은?',['규칙적 운동과 충분한 휴식','밤샘 게임','음식 편식'],0],
+['침방울이 입 밖으로 나가는 것을 막아 주는 것은?',['마스크','양말','장갑'],0],
+['감염병이 크게 유행하면 일어날 수 있는 일은?',['병원이 붐비고 격리된다','모두 더 건강해진다','학교가 더 신난다'],0]];
+LV.length=0;LV.push(
+{n:'독감',ic:'🤧',b:.30,w:[.3,.7,0,0,0],o:[0],t:8,d:40,open:1,info:'독감은 인플루엔자 바이러스 때문에 걸려요. 열이 높고 목이 아프며 기침이 나요. 기침할 때 튀는 <b>비말</b>로 잘 퍼지고, 감기와 달리 <b>예방 접종</b>이 필요해요.'},
+{n:'식중독',ic:'🤢',b:.34,w:[.2,0,0,.5,.3],o:[5],t:7,d:40,open:1,info:'상한 음식이나 오염된 <b>물</b>을 먹으면 배가 아프고 설사를 해요. <b>침</b>이나 손을 통해서도 퍼지니 끓인 물을 마시고 음식은 덜어 먹어요.'},
+{n:'유행 각결막염',ic:'👁',b:.38,w:[.7,.1,0,0,.2],o:[4,3],t:6,d:42,open:0,info:'눈이 빨갛게 붓고 가려운 눈병이에요. 병원체가 묻은 손으로 눈을 비비는 <b>접촉</b>으로 가장 많이 퍼져요. 경로는 역학 조사로 알아내야 해요!'},
+{n:'장티푸스',ic:'🚰',hist:1,b:.40,w:[.1,0,0,.6,.3],o:[3,6],t:6,d:42,open:0,info:'살모넬라 티피균이 든 오염된 <b>물</b>과 음식(<b>침</b>·손)으로 퍼지는 감염병이에요. 높은 열과 배앓이가 오래가요. 깨끗한 물과 손 씻기가 부족한 곳에서 크게 유행했어요.'},
+{n:'코로나19',ic:'😷',b:.45,w:[.15,.4,.45,0,0],o:[2,7],t:6,d:45,open:0,info:'2019년에 처음 발생해 열, 목 아픔, 기침 증상이 나요. 발생한 지 두 달 만에 전 세계로 퍼졌어요. <b>비말</b>과 <b>공기</b>, <b>접촉</b>으로 퍼져서 마스크와 환기가 중요해요.'},
+{n:'흑사병(페스트)',ic:'🐀',hist:1,b:.50,w:[.5,.5,0,0,0],o:[5,11,4],t:5,d:48,open:0,info:'14세기 유럽에서 크게 유행해 인구의 상당수가 목숨을 잃었다고 전해지는 무서운 병이에요. 페스트균이 쥐의 벼룩을 거쳐 사람에게 옮고(<b>접촉</b>), 폐로 번지면 기침 <b>비말</b>로도 퍼져요. 지금은 항생제로 치료해요.'},
+{n:'천연두',ic:'🧫',hist:1,b:.54,w:[.25,.3,.45,0,0],o:[3,6,9],t:5,d:50,open:0,info:'온몸에 물집이 생기는 아주 무서운 병이었어요. 1796년 제너가 백신(종두법)을 만들었고, 전 세계가 <b>예방 접종</b>을 퍼뜨려 1980년 세계보건기구가 근절을 선언했어요. 백신으로 사라진 첫 감염병!'},
+{n:'정체불명 신종 감염병',ic:'🦠',b:.58,w:[.2,.25,.2,.15,.2],o:[6,10,13,1],t:5,d:52,open:0,info:'정체를 알 수 없는 새 병원체예요. 모든 경로를 의심하고, 역학 조사로 단서를 모아 가장 알맞은 수칙을 골라야 해요.'});
+Q.push(
+['급식을 먹은 친구 여러 명이 배탈이 났어요. 의심할 경로는?',['오염된 물·음식을 통한 감염','공기를 통한 감염','비말을 통한 감염'],0],
+['환자 수 그래프가 3주째 계속 줄어들고 있어요. 무슨 뜻일까요?',['감염병 확산이 줄고 있다','더 빨리 퍼지고 있다','그래프가 거짓이다'],0],
+['친구가 씻지 않은 손으로 눈을 비볐어요. 조심할 감염은?',['접촉을 통한 감염','물을 통한 감염','침을 통한 감염'],0],
+['창문이 모두 닫힌 좁은 방에서 병원체를 줄이려면?',['문과 창문을 열어 환기하기','불 끄기','문 잠그기'],0],
+['한 도시에서 환자가 갑자기 늘었어요. 가장 먼저 할 일은?',['역학 조사로 원인과 경로 찾기','모른 척하기','소문 퍼뜨리기'],0],
+['감기와 달리 독감을 막으려면 꼭 필요한 것은?',['예방 접종','야식','늦잠'],0],
+['손을 씻은 뒤 배지의 빨간 점이 줄었어요. 알 수 있는 것은?',['손 씻기가 병원체를 줄여 준다','손 씻기는 소용없다','빨간 점은 먼지다'],0],
+['마스크가 가장 필요한 사람은?',['기침을 심하게 하는 사람','혼자 집에 있는 사람','운동장에서 뛰는 건강한 사람'],0],
+['백신은 언제 접종하면 가장 좋을까요?',['병에 걸리기 전','병이 다 퍼진 뒤','상관없다'],0]);
+const CL=['환자들은 모두 같은 문손잡이와 공용 물건을 만졌어요.','환자들은 기침하는 사람과 가까이에서 이야기를 나눴어요.','환기가 안 되는 같은 방에 오래 있던 사람들이 걸렸어요.','같은 우물물을 마신 마을 사람들만 걸렸고, 옆 마을은 괜찮아요.','한 접시의 음식을 같이 먹은 모둠에서만 환자가 나왔어요.'];
+function clueQ(){const w=G.cfg.w,k=w.indexOf(Math.max(...w)),o=[k,...[0,1,2,3,4].filter(x=>x!==k).sort(()=>Math.random()-.5).slice(0,2)].sort(()=>Math.random()-.5);return[CL[k]+' 어떤 감염 경로일까요?',o.map(x=>R[x][0]+'을(를) 통한 감염'),o.indexOf(k)]}
+const DAYMS=2000;let G=null,unlocked=1,qi=0,answered=false,qOrder=[],last=0,acc=0,fx=[],veh=[];
+try{unlocked=+localStorage.getItem('vg_unlock')||1}catch(e){}
+const cv=$('map'),cx=cv.getContext('2d');
+
+// base map
+const base=document.createElement('canvas');base.width=2000;base.height=1000;
+(function(){const c=base.getContext('2d'),W=2000,H=1000;
+const o=c.createLinearGradient(0,0,0,H);o.addColorStop(0,'#1b86d6');o.addColorStop(.5,'#0b63ad');o.addColorStop(1,'#064a8a');c.fillStyle=o;c.fillRect(0,0,W,H);
+let s=7;const r=()=>(s=(s*1664525+1013904223)>>>0)/4294967296;
+for(let i=0;i<9000;i++){c.fillStyle='rgba(255,255,255,'+r()*.05+')';c.fillRect(r()*W,r()*H,r()*14,1.5)}
+const P=[[[-168,71],[-150,72],[-137,69],[-129,60],[-126,51],[-124,42],[-117,32],[-111,30],[-106,23],[-98,16],[-91,17],[-87,21],[-81,25],[-80,32],[-71,43],[-62,46],[-54,52],[-58,58],[-78,61],[-84,67],[-100,72],[-124,71],[-145,61]],
+[[-82,12],[-75,10],[-70,12],[-61,10],[-52,4],[-48,-1],[-45,-9],[-38,-13],[-36,-20],[-42,-24],[-46,-30],[-51,-34],[-54,-39],[-65,-56],[-71,-52],[-73,-39],[-71,-29],[-77,-17],[-81,-5]],
+[[-73,84],[-43,83],[-21,76],[-40,60],[-52,59],[-60,66],[-52,73],[-66,76]],
+[[-11,36],[-17,28],[-17,16],[-12,4],[-17,-1],[-12,-14],[-2,-20],[11,-34],[19,-35],[30,-31],[35,-24],[41,-12],[51,11],[43,13],[37,21],[33,31],[21,32],[12,37],[4,36]],
+[[-11,36],[-10,44],[-5,49],[-11,55],[-7,59],[10,55],[16,58],[25,70],[39,70],[49,59],[66,56],[74,60],[91,58],[102,53],[115,56],[132,52],[142,49],[146,43],[135,38],[127,34],[121,24],[112,18],[108,10],[103,1],[99,-4],[109,-7],[115,-9],[119,-4],[124,1],[132,0],[140,-7],[135,-12],[126,-10],[118,-8],[110,-9],[105,-4],[103,8],[98,14],[91,20],[85,22],[79,8],[73,9],[70,20],[63,25],[56,25],[49,30],[45,38],[36,42],[28,40],[22,43],[16,39],[9,43],[3,42]],
+[[113,-11],[121,-15],[130,-12],[138,-14],[146,-20],[153,-25],[151,-34],[143,-39],[135,-37],[129,-33],[117,-35],[113,-28]],
+[[44,-12],[50,-15],[49,-25],[45,-26],[43,-18]],
+[[-180,-66],[-140,-69],[-95,-68],[-50,-72],[0,-69],[48,-72],[105,-68],[150,-70],[180,-66],[180,-90],[-180,-90]]];
+const path=()=>{c.beginPath();P.forEach(p=>{p.forEach(([lo,la],i)=>{const x=(lo+180)/360*W,y=(90-la)/180*H;i?c.lineTo(x,y):c.moveTo(x,y)});c.closePath()})};
+path();const g=c.createLinearGradient(0,0,W,H);g.addColorStop(0,'#1f8f33');g.addColorStop(.5,'#37a548');g.addColorStop(1,'#2c9a3e');c.fillStyle=g;c.fill();
+c.save();path();c.clip();for(let i=0;i<14000;i++){c.fillStyle=r()>.5?'rgba(10,80,20,.22)':'rgba(120,190,80,.18)';c.fillRect(r()*W,r()*H,1+r()*7,1+r()*4)}c.restore();
+path();c.strokeStyle='rgba(190,235,255,.7)';c.lineWidth=3;c.stroke();
+const ice=c.createLinearGradient(0,0,0,H);ice.addColorStop(0,'rgba(235,247,252,.85)');ice.addColorStop(.07,'rgba(235,247,252,0)');ice.addColorStop(.93,'rgba(235,247,252,0)');ice.addColorStop(1,'rgba(235,247,252,.85)');c.fillStyle=ice;c.fillRect(0,0,W,H)})();
+
+function ln(a,b,f){f(a.x,a.y,b.x,b.y);if(b.x-a.x>500)f(a.x,a.y,b.x-1000,b.y),f(a.x+1000,a.y,b.x,b.y);else if(a.x-b.x>500)f(a.x,a.y,b.x+1000,b.y),f(a.x-1000,a.y,b.x,b.y)}
+function draw(){cx.setTransform(1,0,0,1,0,0);cx.drawImage(base,0,0,1000,500);
+cx.lineWidth=1.5;cx.strokeStyle='rgba(255,255,255,.55)';cx.setLineDash([5,5]);
+E.forEach(([a,b])=>ln(CT[a],CT[b],(x1,y1,x2,y2)=>{cx.beginPath();cx.moveTo(x1,y1);cx.lineTo(x2,y2);cx.stroke()}));cx.setLineDash([]);
+veh.forEach(v=>{const a=CT[v.a],b=CT[v.b];let bx=b.x;if(bx-a.x>500)bx-=1000;else if(a.x-bx>500)bx+=1000;
+let x=a.x+(bx-a.x)*v.t,y=a.y+(b.y-a.y)*v.t;x=(x+1000)%1000;cx.font='13px sans-serif';cx.fillText(v.e,x-7,y+5)});
+CT.forEach((c,i)=>{const st=G?G.c[i]:{inf:0,imm:0},r=7+c.p*.45,k=Math.min(1,st.inf*3);
+cx.beginPath();cx.arc(c.x,c.y,r+4,0,7);cx.fillStyle='rgba(255,255,255,.85)';cx.fill();
+cx.beginPath();cx.arc(c.x,c.y,r,0,7);cx.fillStyle='rgb('+(235-20*k|0)+','+(235-190*k|0)+','+(235-190*k|0)+')';cx.fill();
+if(st.imm>0){cx.beginPath();cx.arc(c.x,c.y,r+2,-1.57,-1.57+6.28*Math.min(1,st.imm));cx.strokeStyle='#17a34a';cx.lineWidth=4;cx.stroke()}
+if(G&&G.sel===i){cx.beginPath();cx.arc(c.x,c.y,r+8,0,7);cx.strokeStyle='#ffd23f';cx.lineWidth=3;cx.stroke()}
+cx.font='bold 12px sans-serif';cx.fillStyle='#fff';cx.strokeStyle='rgba(0,30,60,.8)';cx.lineWidth=3;cx.strokeText(c.n,c.x-14,c.y-r-7);cx.fillText(c.n,c.x-14,c.y-r-7)});
+fx.forEach(f=>{cx.beginPath();cx.arc(CT[f.i].x,CT[f.i].y,f.r,0,7);cx.strokeStyle='rgba(60,230,120,'+f.a+')';cx.lineWidth=4;cx.stroke()})}
+function loop(t){const dt=Math.min(100,t-last);last=t;
+veh.forEach(v=>{v.t+=dt/4000*v.s;if(v.t>1){v.t=0;v.s=.7+Math.random()*.6}});
+fx.forEach(f=>{f.r+=dt*.08;f.a-=dt*.0012});fx=fx.filter(f=>f.a>0);
+if(G&&!G.paused&&!G.over){acc+=dt;if(acc>=DAYMS){acc-=DAYMS;tick()}}
+draw();requestAnimationFrame(loop)}
+E.forEach(([a,b],i)=>veh.push({a,b,t:Math.random(),s:1,e:['✈️','🚢','🚌'][i%3]}));
+
+function glob(k){let s=0,p=0;G.c.forEach((c,i)=>{s+=c[k]*CT[i].p;p+=CT[i].p});return s/p}
+function msg(t,k){$('msg').textContent=t;$('msg').className='msg '+(k||'')}
+function ui(){const g=glob('inf');$('day').textContent=G.day+'/'+G.cfg.d;$('inf').textContent=(g*100).toFixed(1)+'%';$('imm').textContent=(glob('imm')*100|0)+'%';$('tok').textContent=G.tok;
+$('ib').style.width=Math.min(100,g/.3*100)+'%';$('ib').parentNode.setAttribute('aria-valuenow',Math.round(g*100/.3));$('cb').textContent='🔥 콤보 '+G.combo;$('scb').textContent=G.score+'점';
+document.querySelectorAll('#defs .def').forEach((b,i)=>{b.disabled=G.tok<3||G.over;b.querySelector('.pb i').style.width=G.prot[i]/.85*100+'%'});
+document.querySelector('[data-a=vac]').disabled=G.tok<5||G.over;$('epi').disabled=G.tok<2||G.rev||G.clue||G.over;
+$('vs').textContent=G.sel==null?'도시를 선택하세요 · 이웃 도시로도 퍼져요':CT[G.sel].n+' 선택됨 · 이웃 도시로도 퍼져요';
+document.querySelectorAll('.ans').forEach(b=>b.disabled=answered||G.paused||G.over);
+document.querySelectorAll('#defs small').forEach((s,i)=>{s.textContent=G.rev?(G.cfg.w[i]>0?'이 감염병이 퍼지는 길! ('+Math.round(G.cfg.w[i]*100)+'%)':'이 감염병과는 관계가 적어요'):'경로를 아직 몰라요'})}
+
+function tick(){const c=G.cfg;G.day++;
+const eff=c.b*(1+G.mut)*c.w.reduce((s,w,i)=>s+w*(1-G.prot[i]),0);
+const n=G.c.map((ct,i)=>{let imp=0;E.forEach(([a,b])=>{if(a===i)imp+=G.c[b].inf;if(b===i)imp+=G.c[a].inf});
+const sus=Math.max(0,1-ct.inf-ct.imm),rec=.1*ct.inf;let inf=ct.inf+sus*eff*(ct.inf+.06*imp)-rec;if(inf<.0004)inf=0;
+let imm=ct.imm+rec-.004*ct.imm;if(inf+imm>1)imm=1-inf;return{inf:Math.min(1,inf),imm:Math.max(0,imm)}});G.c=n;
+G.prot=G.prot.map(p=>p*.97);
+if(G.day%2===0)G.tok++;
+const g=glob('inf');G.peak=Math.max(G.peak,g);G.score+=3;
+if(G.day%12===0&&G.lv>0&&Math.random()<.6){G.mut+=.1;msg('⚠️ 병원체가 변이했어요! 더 빨리 퍼져요!','bad')}
+else if(G.day%7===0){G.tok+=2;msg('🧑‍⚕️ 자원봉사자들이 도와줘요! 방역 +2','good')}
+else if(!/^(⚠️|🧑)/.test($('msg').textContent)||G.day%3===0)msg('🌍 감염률 '+(g*100).toFixed(1)+'% · 예방 수칙과 백신으로 막아요!');
+ui();if(g>=.3)end(false);else if(G.day>=c.d||(G.day>=12&&g<.003))end(true)}
+
+function start(i){const c=LV[i];qOrder=Q.map((_,k)=>k).sort(()=>Math.random()-.5);qi=0;
+G={lv:i,cfg:c,day:0,c:CT.map(()=>({inf:0,imm:0})),prot:[0,0,0,0,0],tok:c.t,combo:0,max:0,ok:0,tot:0,score:0,sel:null,paused:false,over:false,mut:0,peak:0,rev:c.open===1};
+c.o.forEach(k=>G.c[k].inf=.03);if(gl.rd){gl.zt=3.1;face(c.o[0])}
+$('menu').classList.add('hide');$('res').classList.add('hide');$('game').classList.remove('hide');$('quiz').classList.remove('hide');
+$('dn').textContent=c.ic+' '+c.n+' (Lv.'+(i+1)+')';$('dinfo').innerHTML=c.info;$('lvb').textContent='LEVEL '+(i+1);$('pz').textContent='⏸ 멈춤';acc=0;
+$('defs').innerHTML=R.map((r,k)=>'<button class="def" data-d="'+k+'"><span>'+r[1]+' '+r[2]+'<small></small><div class="pb"><i></i></div></span><span class="cost">3 🛡️</span></button>').join('');
+document.querySelectorAll('[data-d]').forEach(b=>b.onclick=()=>defend(+b.dataset.d));
+msg('🚨 '+c.o.map(k=>CT[k].n).join('·')+'에서 '+c.n+'이(가) 퍼지기 시작했어요!'+(G.rev?'':' 역학 조사관을 보내 경로를 알아내요!'),'bad');
+showQ();ui()}
+
+function defend(k){if(G.over||G.tok<3)return;G.tok-=3;const w=G.cfg.w[k];G.prot[k]=Math.min(.85,G.prot[k]+.3);G.score+=15;
+msg(w>0?'✅ '+R[k][2]+' 실천! '+R[k][0]+'을(를) 통한 감염이 줄었어요.':'🤔 '+R[k][2]+'은(는) 좋은 습관이지만, 이 감염병은 '+R[k][0]+'으로는 잘 안 퍼져요. 경로를 확인해 봐요!',w>0?'good':'');ui()}
+function vac(){if(G.over||G.tok<5)return;let i=G.sel;if(i==null){msg('먼저 지도에서 백신을 보낼 도시를 눌러 주세요 👆');return}
+G.tok-=5;const give=(j,a)=>{const ct=G.c[j];ct.imm+=Math.min(a,Math.max(0,1-ct.inf-ct.imm));ct.inf*=1-a*.6;fx.push({i:j,r:8,a:1})};
+give(i,.4);E.forEach(([a,b])=>{if(a===i)give(b,.15);if(b===i)give(a,.15)});G.score+=40;
+msg('💉 '+CT[i].n+'에 백신 접종단 도착! 이웃 도시로도 백신이 퍼져요!','good');ui()}
+function epi(){if(G.tok<2||G.rev)return;G.tok-=2;G.clue=true;if(!answered)showQ();const c=G.cfg;
+msg('🕵️ 역학 조사 시작! 아래 퀴즈의 단서를 풀어 보세요 👇'+'','good');ui()}
+document.querySelector('[data-a=vac]').onclick=vac;$('epi').onclick=epi;
+cv.addEventListener('click',e=>{if(!G||G.over)return;const r=cv.getBoundingClientRect(),x=(e.clientX-r.left)/r.width*1000,y=(e.clientY-r.top)/r.height*500;
+let b=-1,d=900;CT.forEach((c,i)=>{const q=(c.x-x)**2+(c.y-y)**2;if(q<d)d=q,b=i});G.sel=b<0?null:b;ui()});
+cv.addEventListener('keydown',e=>{if(!G||G.over)return;if(e.key==='ArrowRight'||e.key==='ArrowLeft'){G.sel=((G.sel==null?-1:G.sel)+(e.key==='ArrowRight'?1:-1)+CT.length)%CT.length;e.preventDefault();ui()}else if(e.key==='Enter')vac()});
+
+function showQ(){const it=G&&G.clue?clueQ():Q[qOrder[qi%Q.length]];$('qq').textContent=(G&&G.clue?'🕵️ 역학 조사 단서! ':'')+it[0];
+const ord=[0,1,2].sort(()=>Math.random()-.5);$('qa').innerHTML='';answered=false;$('fb').textContent='';
+ord.forEach(k=>{const b=document.createElement('button');b.className='ans';b.textContent=it[1][k];b.onclick=()=>answer(b,k===it[2],it[1][it[2]]);$('qa').appendChild(b)})}
+function answer(b,ok,right){if(!G||G.over||G.paused||answered)return;answered=true;G.tot++;if(G.clue&&ok){G.clue=false;G.rev=true;setTimeout(()=>{msg('🕵️ 단서 해독 성공! 이 감염병은 '+R.filter((r,i)=>G.cfg.w[i]>0).map(r=>r[0]).join('·')+'(으)로 퍼져요!','good');ui()},50)}
+if(ok){G.ok++;G.combo++;G.max=Math.max(G.max,G.combo);const t=2+Math.min(3,Math.floor(G.combo/3));G.tok+=t;G.score+=40+G.combo*10;b.classList.add('ok');$('fb').textContent='정답! 방역 +'+t+' 🛡️';$('fb').style.color='#2a8a5a'}
+else{G.combo=0;b.classList.add('no');$('fb').textContent='아쉬워요! 정답: '+right;$('fb').style.color='#cb5a4f'}
+ui();const cur=G;setTimeout(function a(){if(G!==cur||G.over)return;if(G.paused){setTimeout(a,300);return}qi++;showQ();ui()},1300)}
+
+function end(win){G.over=true;const g=G.cfg,acc=G.tot?Math.round(G.ok/G.tot*100):0;
+const stars=!win?0:G.peak<.12?3:G.peak<.22?2:1;G.score+=win?(500*(G.lv+1)+stars*300+G.max*30):0;
+if(win&&G.lv+1>=unlocked&&G.lv<LV.length-1){unlocked=G.lv+2;try{localStorage.setItem('vg_unlock',unlocked)}catch(e){}}
+$('game').classList.add('hide');$('quiz').classList.add('hide');$('res').classList.remove('hide');
+const ways=R.map((r,i)=>[r,g.w[i]]).filter(x=>x[1]>0).sort((a,b)=>b[1]-a[1]);
+$('res').innerHTML='<div class="res"><div class="big">'+(win?'🏆':'😢')+'</div><h2>'+(win?'방역 성공! 지구를 지켰어요':'감염이 너무 많이 퍼졌어요')+'</h2><div class="big">'+(win?'⭐'.repeat(stars)+'☆'.repeat(3-stars):'☆☆☆')+'</div>'+
+'<p><b>'+G.score+'점</b> · 퀴즈 정답률 '+acc+'% · 최고 콤보 '+G.max+'</p><p style="text-align:left;background:var(--soft);padding:10px;border-radius:10px;margin-top:8px;font-size:14px">📖 <b>'+g.n+'</b>은(는) '+ways.map(x=>x[0][0]).join('·')+'을(를) 통해 퍼져요.<br>막는 방법: '+ways.map(x=>x[0][1]+' '+x[0][2]).join(', ')+'<br>그리고 💉 예방 접종, 규칙적인 운동, 충분한 휴식으로 몸을 튼튼하게!</p>'+
+(win&&G.lv<LV.length-1?'<p style="color:#2a8a5a;font-weight:800;margin-top:8px">🔓 새 감염병 해금: '+LV[G.lv+1].n+'</p>':'')+
+'<div style="display:flex;gap:8px;justify-content:center;margin-top:10px"><button class="b" id="again">'+(win&&G.lv<LV.length-1?'다음 단계 ▶':'다시 도전')+'</button><button class="b s" id="home">처음으로</button></div></div>';
+const nx=win&&G.lv<LV.length-1?G.lv+1:G.lv;$('again').onclick=()=>brief(nx);$('home').onclick=home;$('scb').textContent=G.score+'점'}
+function home(){G=null;$('game').classList.add('hide');$('quiz').classList.add('hide');$('res').classList.add('hide');$('menu').classList.remove('hide');$('lvb').textContent='준비';$('scb').textContent='0점';menu()}
+function menu(){$('lv').innerHTML=LV.map((l,i)=>'<button class="lvb" data-l="'+i+'"'+(i+1>unlocked?' disabled':'')+'>'+(i+1>unlocked?'🔒 ':l.ic+' ')+l.n+'<div class="dots">난이도 '+(l.hist?'📜 ':'')+'난이도 '+'●'.repeat(i+1)+'○'.repeat(LV.length-1-i)+'</div></button>').join('');
+document.querySelectorAll('[data-l]').forEach(b=>b.onclick=()=>brief(+b.dataset.l))}
+$('pz').onclick=()=>{if(!G||G.over)return;G.paused=!G.paused;$('pz').textContent=G.paused?'▶ 계속':'⏸ 멈춤';msg(G.paused?'⏸ 잠시 멈췄어요':'▶ 계속!');ui()};
+$('qt').onclick=home;
+function brief(i){const l=LV[i];$('menu').classList.add('hide');$('res').classList.remove('hide');$('res').innerHTML='<div class="res"><div class="big">'+l.ic+'</div><h2>'+l.n+(l.hist?' <span class="pill">📜 역사 속 무서운 감염병</span>':'')+'</h2><p style="text-align:left;background:var(--soft);padding:10px;border-radius:10px;line-height:1.6;font-size:14px">'+l.info+'</p><p style="font-size:13px;color:var(--mut)">난이도 '+(i+1)+'/'+LV.length+' · 시작 도시 '+l.o.length+'곳 · 경로는 '+(l.open?'처음부터 알려 줘요':'역학 조사로 알아내야 해요')+'</p><div style="display:flex;gap:8px;justify-content:center;margin-top:10px"><button class="b" id="go">시작 ▶</button><button class="b s" id="bk">뒤로</button></div></div>';$('go').onclick=()=>start(i);$('bk').onclick=home}
+// ---- 3D 지구 ----
+const RAD=1.4,L3=[];let gl={},rotT=null;
+const p3=(lon,lat,r)=>{const ph=(90-lat)*Math.PI/180,th=(lon+180)*Math.PI/180;return new THREE.Vector3(-r*Math.sin(ph)*Math.cos(th),r*Math.cos(ph),r*Math.sin(ph)*Math.sin(th))};
+function scr(l){const w=l.pos.clone().applyMatrix4(gl.grp.matrixWorld);if(w.z<RAD*RAD/gl.cam.position.z+.06)return null;w.project(gl.cam);const r=gl.cvs.getBoundingClientRect();return{x:(w.x+1)/2*r.width,y:(1-w.y)/2*r.height}}
+function selc(i){if(!G||G.over)return;G.sel=i;const p=L3[i].pos.clone().normalize(),h=Math.hypot(p.x,p.z);rotT={y:Math.atan2(-p.x,p.z),x:Math.atan2(p.y,h)};ui()}
+function init3d(){const el=$('g3');if(!window.THREE){el.textContent='3D 지구를 불러오지 못했어요. 인터넷 연결을 확인해 주세요.';return}
+let rd;try{rd=new THREE.WebGLRenderer({antialias:true,alpha:true})}catch(e){el.textContent='이 기기에서는 3D를 쓸 수 없어요.';return}
+rd.setPixelRatio(Math.min(devicePixelRatio||1,2));el.appendChild(rd.domElement);
+const sc=new THREE.Scene(),cam=new THREE.PerspectiveCamera(36,1,.1,50),grp=new THREE.Group();cam.position.z=5;sc.add(grp);
+sc.add(new THREE.AmbientLight(0xffffff,1.35));const sn=new THREE.DirectionalLight(0xffffff,1.4);sn.position.set(-3,3,5);sc.add(sn);
+const tex=new THREE.CanvasTexture(base);tex.colorSpace=THREE.SRGBColorSpace;tex.anisotropy=4;
+grp.add(new THREE.Mesh(new THREE.SphereGeometry(RAD,72,48),new THREE.MeshPhongMaterial({map:tex,shininess:18,specular:0x335577})));
+sc.add(new THREE.Mesh(new THREE.SphereGeometry(RAD*1.04,48,32),new THREE.MeshBasicMaterial({color:0x6fc3ff,transparent:true,opacity:.12,side:THREE.BackSide})));
+const up=new THREE.Vector3(0,0,1),ring=(a,b,col)=>new THREE.Mesh(new THREE.RingGeometry(a,b,40),new THREE.MeshBasicMaterial({color:col,transparent:true,opacity:0,side:THREE.DoubleSide}));
+CT.forEach((c,i)=>{const pos=p3(c.x*.36-180,90-c.y*.36,RAD+.012),q=new THREE.Quaternion().setFromUnitVectors(up,pos.clone().normalize());
+const m=new THREE.Mesh(new THREE.SphereGeometry(.03+c.p*.0018,16,12),new THREE.MeshBasicMaterial({color:0xffffff}));m.position.copy(pos);grp.add(m);
+const hl=ring(.065,.08,0x2ee56b),fxr=ring(.06,.075,0x9dffbd);[hl,fxr].forEach(o=>{o.position.copy(pos);o.quaternion.copy(q);grp.add(o)});
+const lb=document.createElement('div');lb.className='lab';el.appendChild(lb);L3.push({m,hl,fxr,lb,pos,q,c})});
+const sel=ring(.095,.115,0xffd23f);grp.add(sel);
+const LD=base.getContext('2d').getImageData(0,0,2000,1000).data;
+const dc=document.createElement('canvas');dc.width=dc.height=32;const dx=dc.getContext('2d');dx.beginPath();dx.arc(16,16,14,0,7);dx.fillStyle='#fff';dx.fill();
+const PA=new Float32Array(CT.length*60*3),pg=new THREE.BufferGeometry();pg.setAttribute('position',new THREE.BufferAttribute(PA,3));
+const pts=new THREE.Points(pg,new THREE.PointsMaterial({size:.034,map:new THREE.CanvasTexture(dc),color:0xe8232a,transparent:true,alphaTest:.4,depthWrite:false}));pts.frustumCulled=false;grp.add(pts);
+L3.forEach(l=>{l.n=l.pos.clone().normalize();l.t1=new THREE.Vector3().crossVectors(l.n,new THREE.Vector3(0,1,0)).normalize();l.t2=new THREE.Vector3().crossVectors(l.n,l.t1);l.d=Array.from({length:60},()=>({a:Math.random()*6.283,r:Math.pow(Math.random(),.8)})).sort((a,b)=>a.r-b.r)});
+E.forEach(([a,b])=>{const A=L3[a].pos.clone().normalize(),B=L3[b].pos.clone().normalize(),n=Math.max(.2,A.angleTo(B)),pts=[];for(let k=0;k<=24;k++){const t=k/24;pts.push(A.clone().lerp(B,t).normalize().multiplyScalar(RAD+.01+.09*n*Math.sin(Math.PI*t)))}
+grp.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(pts),new THREE.LineBasicMaterial({color:0xffffff,transparent:true,opacity:.4})))});
+veh.forEach(v=>{v.A=L3[v.a].pos.clone().normalize();v.B=L3[v.b].pos.clone().normalize();v.n=Math.max(.2,v.A.angleTo(v.B));v.mesh=new THREE.Mesh(new THREE.BoxGeometry(.04,.04,.04),new THREE.MeshBasicMaterial({color:v.e==='✈️'?0xffffff:v.e==='🚢'?0xffa726:0x42a5f5}));grp.add(v.mesh)});
+const cvs=rd.domElement;let dr=false,mv=0,lx=0,ly=0;
+cvs.addEventListener('pointerdown',e=>{dr=gl.dr=true;mv=0;lx=e.clientX;ly=e.clientY;rotT=null;cvs.setPointerCapture(e.pointerId)});
+cvs.addEventListener('pointermove',e=>{if(!dr)return;mv+=Math.abs(e.clientX-lx)+Math.abs(e.clientY-ly);grp.rotation.y+=(e.clientX-lx)*.008;grp.rotation.x=Math.max(-1.2,Math.min(1.2,grp.rotation.x+(e.clientY-ly)*.008));lx=e.clientX;ly=e.clientY});
+cvs.addEventListener('pointerup',e=>{dr=gl.dr=false;if(mv<14&&G&&!G.over){const r=cvs.getBoundingClientRect(),px=e.clientX-r.left,py=e.clientY-r.top;let b=-1,d=12000;L3.forEach((l,i)=>{const s=scr(l);if(s){const q=(s.x-px)**2+(s.y-py)**2;if(q<d){d=q;b=i}}});if(b>=0)selc(b)}});
+cvs.addEventListener('pointercancel',()=>dr=gl.dr=false);
+el.addEventListener('keydown',e=>{if(!G||G.over)return;if(e.key==='ArrowRight'||e.key==='ArrowLeft'){e.preventDefault();selc(((G.sel==null?-1:G.sel)+(e.key==='ArrowRight'?1:-1)+CT.length)%CT.length)}else if(e.key==='Enter')vac()});
+const rs=()=>{const w=Math.max(200,el.clientWidth);rd.setSize(w,w,false)};rs();if(window.ResizeObserver)new ResizeObserver(rs).observe(el);else addEventListener('resize',rs);
+grp.rotation.y=-.9;grp.rotation.x=.3;Object.assign(gl,{rd,sc,cam,grp,sel,cvs,pts,PA,LD,zt:5})}
+function draw(){const g=gl;if(!g.rd)return;const grp=g.grp;
+if(rotT){const d=((rotT.y-grp.rotation.y)%(Math.PI*2)+Math.PI*3)%(Math.PI*2)-Math.PI;grp.rotation.y+=d*.12;grp.rotation.x+=(rotT.x-grp.rotation.x)*.12;if(Math.abs(d)<.003)rotT=null}
+else if(!G&&!g.dr)grp.rotation.y+=.002;
+L3.forEach((l,i)=>{const s=G?G.c[i]:{inf:0,imm:0},k=Math.min(1,s.inf*3.5);l.m.material.color.setRGB(1-.12*k,1-.85*k,1-.85*k);l.m.scale.setScalar(1+s.inf*7+(s.inf>.01?Math.sin(Date.now()/250+i)*.12:0));l.hl.material.opacity=Math.min(.95,s.imm*1.4);
+const f=fx.find(f=>f.i===i);l.fxr.material.opacity=f?f.a:0;if(f)l.fxr.scale.setScalar(.6+f.r/5)});
+grp.updateMatrixWorld();
+if(G&&G.sel!=null){g.sel.material.opacity=1;g.sel.position.copy(L3[G.sel].pos);g.sel.quaternion.copy(L3[G.sel].q)}else g.sel.material.opacity=0;
+veh.forEach(v=>{if(v.mesh)v.mesh.position.copy(v.A.clone().lerp(v.B,v.t).normalize().multiplyScalar(RAD+.01+.09*v.n*Math.sin(Math.PI*v.t)))});
+L3.forEach((l,i)=>{const s=scr(l);if(s){l.lb.style.display='block';l.lb.style.left=s.x+'px';l.lb.style.top=s.y+'px';l.lb.textContent=l.c.n+(G?' '+Math.round(G.c[i].inf*100)+'%':'')}else l.lb.style.display='none'});
+g.cam.position.z+=(g.zt-g.cam.position.z)*.15;
+let q=0;L3.forEach((l,i)=>{const t=G?G.c[i].inf:0;l.vi=(l.vi||0)+(t-(l.vi||0))*.06;const vi=l.vi,cnt=vi<.0005?0:Math.min(60,Math.ceil(vi*220)),mt=Math.min(.65,.05+vi*1.3);
+for(let k=0;k<60;k++){let x=0,y=0,z=0;if(k<cnt){const dd=l.d[k],th=mt*dd.r,s=Math.sin(th),c=Math.cos(th);tv.copy(l.n).multiplyScalar(c).addScaledVector(l.t1,s*Math.cos(dd.a)).addScaledVector(l.t2,s*Math.sin(dd.a));if(th<.05||isLand(tv)){tv.multiplyScalar(RAD+.008);x=tv.x;y=tv.y;z=tv.z}}g.PA[q++]=x;g.PA[q++]=y;g.PA[q++]=z}});
+g.pts.geometry.attributes.position.needsUpdate=true;
+if(g.chips)g.chips.forEach((b,i)=>{const t=CT[i].n+(G?' '+Math.round(G.c[i].inf*100)+'%':'');if(b.textContent!==t)b.textContent=t;b.style.borderColor=G&&G.sel===i?'#ffd23f':'';b.style.background=G?'rgba(217,69,58,'+Math.min(.75,G.c[i].inf*2.5)+')':''});
+g.rd.render(g.sc,g.cam)}
+const tv=window.THREE?new THREE.Vector3():null;
+function isLand(v){const lat=Math.asin(Math.max(-1,Math.min(1,v.y)))*57.2958;let t=Math.atan2(v.z,-v.x);if(t<0)t+=6.2832;const px=Math.min(1999,t*57.2958/360*2000|0),py=Math.max(0,Math.min(999,(90-lat)/180*1000|0)),k=(py*2000+px)*4,D=gl.LD;return D[k+1]>D[k+2]+15&&D[k+1]>D[k]}
+function face(i){const p=L3[i].pos.clone().normalize(),h=Math.hypot(p.x,p.z);rotT={y:Math.atan2(-p.x,p.z),x:Math.atan2(p.y,h)}}
+function zoom(d){const g=gl;if(!g.rd)return;g.zt=Math.max(2.7,Math.min(5.4,g.zt+d));if(d<0&&G&&!G.over){let i=G.sel;if(i==null){i=0;G.c.forEach((c,k)=>{if(c.inf>G.c[i].inf)i=k})}face(i)}}
+function setupUI(){if(!gl.rd)return;const st=document.createElement('style');st.textContent='.zb{position:absolute;right:8px;width:40px;height:40px;border-radius:50%;border:1px solid #fff8;background:#000a;color:#fff;font-size:20px;font-weight:800;z-index:3}.chip{border:2px solid var(--line);background:var(--soft);border-radius:14px;padding:5px 9px;font-size:12px;font-weight:700;margin:2px}';document.head.appendChild(st);const el=$('g3');
+[['\uff0b',-.8,'\ud655\ub300',8],['\uff0d',.8,'\ucd95\uc18c',54],['\ud83c\udf0d',9,'\uc804\uccb4 \ubcf4\uae30',100]].forEach(([t,d,a,top])=>{const b=document.createElement('button');b.className='zb';b.style.top=top+'px';b.textContent=t;b.setAttribute('aria-label','\uc9c0\uad6c '+a);b.onclick=()=>zoom(d);el.appendChild(b)});
+const cl=document.createElement('div');cl.style.marginTop='8px';cl.setAttribute('role','group');cl.setAttribute('aria-label','\ub3c4\uc2dc \uc120\ud0dd');CT.forEach((c,i)=>{const b=document.createElement('button');b.className='chip';b.onclick=()=>{if(G&&!G.over)selc(i);else face(i)};cl.appendChild(b)});el.insertAdjacentElement('afterend',cl);gl.chips=[...cl.children];
+el.addEventListener('wheel',e=>{e.preventDefault();zoom(e.deltaY*.004)},{passive:false})}
+menu();init3d();setupUI();requestAnimationFrame(t=>{last=t;loop(t)});
+</script></body></html>
